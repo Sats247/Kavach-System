@@ -92,13 +92,29 @@ function inspectVessel(imo) {
   const isFlagged = vessel.is_flagged;
   const isCleared = !isFlagged && vessel.status !== 'INTERCEPTED';
 
-  const flagBtn = isCleared ? `
-    <div style="margin-top:16px;border-top:1px solid var(--color-border);padding-top:14px">
-      <div style="font-size:12px;color:var(--color-text-muted);margin-bottom:8px">Officer Action</div>
-      <button class="btn btn-danger btn-sm" onclick="flagVessel('${vessel.imo}')" style="width:100%">
-        ⚑ Flag This Vessel as Suspicious
-      </button>
-    </div>` : '';
+  const officerActions = `
+    <div style="margin-top:16px;border-top:1px solid var(--color-border);padding-top:14px;display:flex;flex-direction:column;gap:12px">
+      <div>
+        <div style="font-size:12px;color:var(--color-text-muted);margin-bottom:8px">Update Vessel Status</div>
+        <div style="display:flex;gap:8px">
+          <select id="update-status-${vessel.imo}" class="form-select btn-sm" style="flex:1">
+            <option value="Docked at Port" ${vessel.status === 'Docked at Port' ? 'selected' : ''}>⚓ Docked at Port</option>
+            <option value="Approaching on Water" ${vessel.status === 'Approaching on Water' ? 'selected' : ''}>🌊 Approaching on Water</option>
+            <option value="Departing from Port" ${vessel.status === 'Departing from Port' ? 'selected' : ''}>🚢 Departing from Port</option>
+            <option value="CLEARED" ${vessel.status === 'CLEARED' ? 'selected' : ''}>✓ Cleared</option>
+            <option value="Pending" ${vessel.status === 'Pending' ? 'selected' : ''}>● Pending</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="submitUpdateStatus('${vessel.imo}')">Update</button>
+        </div>
+      </div>
+      ${isCleared ? `
+      <div>
+        <div style="font-size:12px;color:var(--color-text-muted);margin-bottom:8px">Security Action</div>
+        <button class="btn btn-danger btn-sm" onclick="flagVessel('${vessel.imo}')" style="width:100%">
+          ⚑ Flag This Vessel as Suspicious
+        </button>
+      </div>` : ''}
+    </div>`;
 
   const drawerHTML = `
     <div class="data-grid" style="margin-bottom:16px">
@@ -115,7 +131,7 @@ function inspectVessel(imo) {
     </div>
     ${isFlagged && vessel.flag_reason ? `<blockquote class="vessel-flag-reason"><strong>INTERPOL / RAW INTELLIGENCE ALERT</strong><br><br>${vessel.flag_reason}</blockquote>` : ''}
     <div style="margin-top:12px">${statusBadge(vessel.status)}</div>
-    ${flagBtn}
+    ${officerActions}
   `;
   openDrawer(drawerHTML, `${vessel.vessel_name} — IMO ${vessel.imo}`);
 }
@@ -240,31 +256,130 @@ async function submitIncident(imo) {
   }
 }
 
+// ── Vessel Add & Update Status logic ───────────────────────────
+async function submitUpdateStatus(imo) {
+  const newStatus = document.getElementById(`update-status-${imo}`).value;
+  const res = await apiFetch('/api/sea-marshall/update-status', {
+    method: 'POST',
+    body: JSON.stringify({ imo, status: newStatus })
+  });
+  if (res.success) {
+    showToast(`Vessel ${imo} status updated to ${newStatus}`, 'success');
+    closeDrawer();
+    await loadVessels();
+  } else {
+    showToast('Failed to update status: ' + res.message, 'error');
+  }
+}
+
+function showAddVesselModal() {
+  openModal({
+    title: 'Log New Vessel',
+    body: `
+      <form id="add-vessel-form" style="display:flex;flex-direction:column;gap:14px">
+        <div class="form-row-2">
+          <div class="form-group"><label class="form-label required">IMO Number</label><input type="text" id="add-imo" required></div>
+          <div class="form-group"><label class="form-label required">Vessel Name</label><input type="text" id="add-name" required></div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group"><label class="form-label required">Type</label><input type="text" id="add-type" required placeholder="e.g. Bulk Carrier"></div>
+          <div class="form-group"><label class="form-label required">Flag State</label><input type="text" id="add-flag" required></div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group"><label class="form-label">Captain</label><input type="text" id="add-captain"></div>
+          <div class="form-group"><label class="form-label">ETA</label><input type="text" id="add-eta" placeholder="YYYY-MM-DD HH:MM"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label required">Initial Status</label>
+          <select id="add-status" class="form-select">
+            <option value="Docked at Port">⚓ Docked at Port</option>
+            <option value="Approaching on Water">🌊 Approaching on Water</option>
+            <option value="Departing from Port">🚢 Departing from Port</option>
+            <option value="Pending">● Pending</option>
+            <option value="CLEARED">✓ Cleared</option>
+          </select>
+        </div>
+      </form>`,
+    footer: `
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitNewVessel()">Save Vessel</button>
+    `
+  });
+}
+
+async function submitNewVessel() {
+  const form = document.getElementById('add-vessel-form');
+  if (!validateForm(form)) return;
+  const payload = {
+    imo: document.getElementById('add-imo').value,
+    vessel_name: document.getElementById('add-name').value,
+    vessel_type: document.getElementById('add-type').value,
+    flag_state: document.getElementById('add-flag').value,
+    captain: document.getElementById('add-captain').value,
+    eta: document.getElementById('add-eta').value,
+    status: document.getElementById('add-status').value
+  };
+  const res = await apiFetch('/api/sea-marshall/add-vessel', { method: 'POST', body: JSON.stringify(payload) });
+  if (res.success) {
+    closeModal();
+    showToast('Vessel added successfully', 'success');
+    await loadVessels();
+  } else {
+    showToast('Failed to add vessel: ' + res.message, 'error');
+  }
+}
+
+let _chartVesselTypes, _chartDocked, _chartFlags;
+
 function loadSeaCharts() {
   // Vessel type bar chart
   const typeCtx = document.getElementById('chart-vessel-types')?.getContext('2d');
   if (typeCtx && _vessels.length) {
     const typeCounts = {};
     _vessels.forEach(v => { typeCounts[v.vessel_type] = (typeCounts[v.vessel_type]||0)+1; });
-    new Chart(typeCtx, {
+    if (_chartVesselTypes) _chartVesselTypes.destroy();
+    _chartVesselTypes = new Chart(typeCtx, {
       type:'bar',
       data:{ labels:Object.keys(typeCounts), datasets:[{data:Object.values(typeCounts),backgroundColor:'#0057B8',borderRadius:4}] },
       options:{ indexAxis:'y', plugins:{ legend:{display:false} }, scales:{ x:{grid:{color:'#F0F0F0'}}, y:{grid:{display:false}, ticks:{font:{size:10}}} }, responsive:true, maintainAspectRatio:false }
     });
   }
+
+  // Status Profile pie chart
+  const dockedCtx = document.getElementById('chart-docked-status')?.getContext('2d');
+  if (dockedCtx && _vessels.length) {
+    const statusCounts = {};
+    _vessels.forEach(v => {
+      if (['Docked at Port', 'Approaching on Water', 'Departing from Port'].includes(v.status)) {
+        statusCounts[v.status] = (statusCounts[v.status] || 0) + 1;
+      } else {
+        statusCounts['Other'] = (statusCounts['Other'] || 0) + 1;
+      }
+    });
+    const statusColors = ['#0057B8', '#1A7F4B', '#D97706', '#6B7280'];
+    if (_chartDocked) _chartDocked.destroy();
+    _chartDocked = new Chart(dockedCtx, {
+      type: 'pie',
+      data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: statusColors, borderWidth: 2, borderColor: '#fff' }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10 } } } }
+    });
+  }
+
   // Flag state pie chart
   const flagCtx = document.getElementById('chart-flags')?.getContext('2d');
   if (flagCtx && _vessels.length) {
     const flagCounts = {};
     _vessels.forEach(v => { const f = v.flag_state.split('(')[0].trim(); flagCounts[f]=(flagCounts[f]||0)+1; });
     const colors = ['#0057B8','#002147','#1A7F4B','#D97706','#DC2626','#0284C7','#8B5CF6','#6B7280'];
-    new Chart(flagCtx, {
+    if (_chartFlags) _chartFlags.destroy();
+    _chartFlags = new Chart(flagCtx, {
       type:'pie',
       data:{ labels:Object.keys(flagCounts), datasets:[{data:Object.values(flagCounts),backgroundColor:colors,borderWidth:2,borderColor:'#fff'}] },
       options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ font:{size:10}, boxWidth:10 } } } }
     });
   }
 }
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   await loadVessels();

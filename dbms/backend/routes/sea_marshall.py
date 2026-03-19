@@ -151,3 +151,74 @@ def flag_vessel():
         data={'imo': imo, 'new_status': 'FLAGGED_ILLEGAL', 'incident_id': inc_id},
         message=f'Vessel IMO {imo} flagged. Intel Command notified. Incident {inc_id} created.'
     )
+
+@sea_marshall_bp.route('/update-status', methods=['POST'])
+def update_status():
+    data = request.get_json(silent=True) or {}
+    imo = data.get('imo', '').strip()
+    status = data.get('status', '').strip()
+    if not imo or not status:
+        return api_error('imo and status required')
+    db = get_db()
+    try:
+        db.execute("""
+            INSERT INTO vessel_status(imo, status, updated_at)
+            VALUES (?, ?, datetime('now'))
+            ON CONFLICT(imo) DO UPDATE SET status=?, updated_at=datetime('now')
+        """, (imo, status, status))
+        db.commit()
+    except Exception as e:
+        db.close()
+        return api_error(str(e), 500)
+    finally:
+        db.close()
+    return api_response(message='Status updated successfully')
+
+@sea_marshall_bp.route('/add-vessel', methods=['POST'])
+def add_vessel():
+    data = request.get_json(silent=True) or {}
+    required = ['imo', 'vessel_name', 'vessel_type', 'flag_state', 'status']
+    for f in required:
+        if not data.get(f):
+            return api_error(f'Field required: {f}')
+    
+    try:
+        vessels = _load_vessels()
+        new_vessel = {
+            "imo": data.get("imo"),
+            "vessel_name": data.get("vessel_name"),
+            "vessel_type": data.get("vessel_type"),
+            "country_of_origin": data.get("flag_state"),
+            "flag_state": data.get("flag_state"),
+            "cargo": "Unknown",
+            "gross_tonnage": 0,
+            "destination_port": "Unknown",
+            "eta": data.get("eta", ""),
+            "last_port": "Unknown",
+            "captain": data.get("captain", ""),
+            "crew_count": 0,
+            "status": data.get("status"),
+            "is_flagged": False,
+            "flag_reason": None
+        }
+        vessels.append(new_vessel)
+        with open(VESSELS_PATH, 'w', encoding='utf-8') as f:
+            json.dump(vessels, f, indent=2)
+            
+        db = get_db()
+        try:
+            db.execute("""
+                INSERT INTO vessel_status(imo, status, updated_at)
+                VALUES (?, ?, datetime('now'))
+                ON CONFLICT(imo) DO UPDATE SET status=?, updated_at=datetime('now')
+            """, (data.get('imo'), data.get('status'), data.get('status')))
+            db.commit()
+        except Exception as e:
+            pass
+        finally:
+            db.close()
+    except Exception as e:
+        return api_error(str(e), 500)
+    
+    return api_response(message='Vessel added successfully')
+

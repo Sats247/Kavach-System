@@ -38,27 +38,6 @@
       </div>
     </header>
     <main class="content-area">
-      <!-- Critical Alert Banner —— MV Shadow Runner -->
-      <div class="maritime-alert" id="maritime-alert-banner">
-        <div class="maritime-alert-header">
-          <div>
-            <div class="maritime-alert-title">🚨 CRITICAL MARITIME SECURITY ALERT — UNREGISTERED VESSEL APPROACHING</div>
-            <div class="maritime-alert-meta">
-              IMO 9123450 — <strong>MV Shadow Runner</strong> · General Cargo · FLAGGED_ILLEGAL<br>
-              Vessel IMO does NOT appear in IHS Markit Fairplay commercial registry.<br>
-              INTERPOL Alert: Linked to transnational arms network, last port Karachi, Pakistan (72 hours ago).<br>
-              AIS transponder disabled for 18 hours. Current ETA: JNPT, Navi Mumbai — 18:30 IST today.<br>
-              <strong>RAW Classification: LEVEL 3 CRITICAL</strong>
-            </div>
-          </div>
-        </div>
-        <div class="maritime-alert-actions">
-          <button class="btn-alert-action" id="btn-intercept" onclick="issueInterceptOrder()">⚑ ISSUE INTERCEPT ORDER — COAST GUARD</button>
-          <button class="btn-alert-action" id="btn-incident-banner" onclick="showIncidentModal('9123450')">📋 FILE INCIDENT REPORT</button>
-          <button class="btn-alert-action" onclick="inspectVessel('9123450')">🔍 INSPECT VESSEL PROFILE</button>
-        </div>
-      </div>
-
       <!-- KPI Row -->
       <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
         <div class="kpi-card" style="border-left-color:var(--color-primary)">
@@ -107,6 +86,7 @@
         <div class="card-header">
           <span class="card-title">Vessel Traffic Register — Indian EEZ</span>
           <div style="display:flex;gap:8px">
+            <button class="btn btn-primary btn-sm" onclick="showAddVesselModal()">+ Log New Vessel</button>
             <button class="btn btn-secondary btn-sm" onclick="loadVessels()">↻ Refresh</button>
           </div>
         </div>
@@ -125,8 +105,9 @@
       </div>
 
       <!-- Analytics -->
-      <div class="sea-charts">
+      <div class="sea-charts" style="grid-template-columns: repeat(3, 1fr);">
         <div class="chart-card"><div class="chart-title">Vessel Types</div><div class="chart-canvas-wrap"><canvas id="chart-vessel-types"></canvas></div></div>
+        <div class="chart-card"><div class="chart-title">Status Profile</div><div class="chart-canvas-wrap"><canvas id="chart-docked-status"></canvas></div></div>
         <div class="chart-card"><div class="chart-title">Flag States</div><div class="chart-canvas-wrap"><canvas id="chart-flags"></canvas></div></div>
       </div>
     </main>

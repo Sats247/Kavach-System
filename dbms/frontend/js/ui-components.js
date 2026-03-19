@@ -96,7 +96,6 @@ function statusBadge(status) {
     'CLEARED':     ['verified','✓ Cleared'],
     'INTERCEPTED': ['flagged','⚑ Intercepted'],
     'FLAGGED_ILLEGAL': ['flagged','🚨 Illegal'],
-    'Pending':     ['pending','● Pending'],
     'Acknowledged':['provisional','✓ Acknowledged'],
     'In Progress': ['regional','↗ In Progress'],
     'Completed':   ['verified','✓ Completed'],
@@ -104,6 +103,9 @@ function statusBadge(status) {
     'Under Review':['provisional','◔ Under Review'],
     'Resolved':    ['verified','✓ Resolved'],
     'Escalated':   ['flagged','↑ Escalated'],
+    'Docked at Port':      ['pending','⚓ Docked at Port'],
+    'Approaching on Water':['regional','🌊 Approaching on Water'],
+    'Departing from Port': ['provisional','🚢 Departing from Port']
   };
   const [cls, label] = map[status] || ['denied', status];
   return `<span class="badge badge-${cls}">${label}</span>`;
