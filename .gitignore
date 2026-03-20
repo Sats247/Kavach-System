@@ -1,5 +1,24 @@
-.DS_Store
-venv/
+# OpenSky API credentials — never commit
+opensky-network credentials - livemap.json
+
+# Python
 __pycache__/
 *.pyc
-.sqlite
+*.pyo
+*.pyd
+.Python
+*.env
+.env
+.env.local
+venv/
+.venv/
+env/
+
+# Flask
+instance/
+.webassets-cache
+flask_session/
+
+# OS
+.DS_Store
+Thumbs.db

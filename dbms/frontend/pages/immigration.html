@@ -1,132 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DBMS — Immigration Verification Terminal</title>
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/immigration.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/liveaircraft/blr/css/blr-map.css" />
 </head>
+
 <body>
-<div class="app-shell">
-  <nav class="sidebar">
-    <div class="sidebar-brand">
-      <img src="/svg/dbms-logo.svg" style="width:32px;height:32px" alt="DBMS">
-      <div><div class="sidebar-brand-text">DBMS</div><div class="sidebar-brand-sub">Immigration Terminal</div></div>
-    </div>
-    <div class="sidebar-nav">
-      <a href="/pages/dashboard.html" class="nav-item"><img src="/svg/icons/dashboard.svg" style="width:16px;filter:invert(1)" alt=""><span>Dashboard</span></a>
-      <hr class="sidebar-divider">
-      <a href="/pages/immigration.html" class="nav-item active"><img src="/svg/icons/passport.svg" style="width:16px;filter:invert(1)" alt=""><span>Immigration Verification</span></a>
-      <a href="/pages/sea-marshall.html" class="nav-item"><img src="/svg/icons/ship.svg" style="width:16px;filter:invert(1)" alt=""><span>Sea Marshall</span></a>
-      <hr class="sidebar-divider">
-      <a href="/pages/ngo-portal.html" class="nav-item"><img src="/svg/icons/ngo.svg" style="width:16px;filter:invert(1)" alt=""><span>NGO Portal</span></a>
-    </div>
-    <div class="sidebar-bottom">
-      <div class="lang-pills"><button class="lang-pill active" data-lang="en">EN</button><button class="lang-pill" data-lang="hi">हि</button></div>
-      <div class="sidebar-user" id="sidebar-user-info">Loading...</div>
-      <button class="btn btn-secondary" id="logout-btn" style="width:100%;font-size:11px">← Logout</button>
-    </div>
-  </nav>
-  <div class="main-content">
-    <header class="top-header">
-      <div class="breadcrumb">Immigration › <strong>Verification Terminal</strong></div>
-      <div class="header-right">
-        <div class="live-clock" id="live-clock">—</div>
-        <div class="system-badge">Terminal Active</div>
-      </div>
-    </header>
-    <main class="content-area">
-      <div class="page-header">
+  <div class="app-shell">
+    <nav class="sidebar">
+      <div class="sidebar-brand">
+        <img src="/svg/dbms-logo.svg" style="width:32px;height:32px" alt="DBMS">
         <div>
-          <h1 class="page-title" data-i18n="immigration.title">Immigration Verification Terminal</h1>
-          <p class="page-subtitle">Biometric capture, OCR document scan, watchlist cross-reference, and entry certification</p>
+          <div class="sidebar-brand-text">DBMS</div>
+          <div class="sidebar-brand-sub">Immigration Terminal</div>
         </div>
       </div>
-
-      <!-- Tab bar -->
-      <div class="tab-bar">
-        <div class="tab-item active" data-tab="tab-verify" data-i18n="immigration.tab_verify">Passport Verification Terminal</div>
-        <div class="tab-item" data-tab="tab-travelers" data-i18n="immigration.tab_travelers">Traveler Database</div>
+      <div class="sidebar-nav">
+        <a href="/pages/dashboard.html" class="nav-item"><img src="/svg/icons/dashboard.svg"
+            style="width:16px;filter:invert(1)" alt=""><span>Dashboard</span></a>
+        <hr class="sidebar-divider">
+        <a href="/pages/immigration.html" class="nav-item active"><img src="/svg/icons/passport.svg"
+            style="width:16px;filter:invert(1)" alt=""><span>Immigration Verification</span></a>
+        <a href="/pages/sea-marshall.html" class="nav-item"><img src="/svg/icons/ship.svg"
+            style="width:16px;filter:invert(1)" alt=""><span>Sea Marshall</span></a>
+        <hr class="sidebar-divider">
+        <a href="/pages/ngo-portal.html" class="nav-item"><img src="/svg/icons/ngo.svg"
+            style="width:16px;filter:invert(1)" alt=""><span>NGO Portal</span></a>
       </div>
-
-      <!-- Tab: Verification Terminal -->
-      <div class="tab-content active" id="tab-verify">
-        <div class="immigration-panels">
-          <!-- Left: Camera -->
-          <div class="immigration-panel">
-            <div class="panel-header">
-              <span data-i18n="immigration.camera_label">Live Biometric Feed</span>
-              <span class="camera-active"><span class="camera-dot" id="camera-dot"></span><span id="camera-label">Starting camera...</span></span>
-            </div>
-            <video id="webcam-feed" autoplay muted playsinline></video>
-            <div class="webcam-controls">
-              <button class="btn btn-primary btn-sm" id="btn-capture" onclick="captureFrame()">
-                <img src="/svg/icons/camera.svg" style="width:13px;height:13px;filter:invert(1)" alt=""> <span data-i18n="immigration.capture_btn">Capture Frame</span>
-              </button>
-              <span class="text-muted text-xs" style="margin-left:8px">Frame used for face match analysis</span>
-            </div>
+      <div class="sidebar-bottom">
+        <div class="lang-pills"><button class="lang-pill active" data-lang="en">EN</button><button class="lang-pill"
+            data-lang="hi">हि</button></div>
+        <div class="sidebar-user" id="sidebar-user-info">Loading...</div>
+        <button class="btn btn-secondary" id="logout-btn" style="width:100%;font-size:11px">← Logout</button>
+      </div>
+    </nav>
+    <div class="main-content">
+      <header class="top-header">
+        <div class="breadcrumb">Immigration › <strong>Verification Terminal</strong></div>
+        <div class="header-right">
+          <div class="live-clock" id="live-clock">—</div>
+          <div class="system-badge">Terminal Active</div>
+        </div>
+      </header>
+      <main class="content-area">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" data-i18n="immigration.title">Immigration Verification Terminal</h1>
+            <p class="page-subtitle">Biometric capture, OCR document scan, watchlist cross-reference, and entry
+              certification</p>
           </div>
+        </div>
 
-          <!-- Right: Document Upload + Scan -->
-          <div class="immigration-panel">
-            <div class="panel-header" data-i18n="immigration.document_label">Document Upload — Passport Scan</div>
-            <div class="dropzone" id="dropzone">
-              <img src="/svg/icons/upload.svg" style="width:28px;height:28px;color:var(--color-primary);margin:0 auto;filter:invert(35%) sepia(100%) saturate(500%) hue-rotate(185deg)" alt="">
-              <div class="dropzone-text" data-i18n="immigration.dropzone_text">Drop passport scan here</div>
-              <div class="dropzone-sub" data-i18n="immigration.dropzone_sub">or click to upload — Accepts JPG, PNG, PDF</div>
-              <input type="file" id="file-input" accept="image/*,.pdf" style="display:none">
-            </div>
-            <div id="scan-container">
-              <div class="scan-status-box">
-                <div class="scan-status-text" id="scan-status">Upload a passport document to begin...</div>
+        <!-- Tab bar -->
+        <div class="tab-bar">
+          <div class="tab-item active" data-tab="tab-verify" data-i18n="immigration.tab_verify">Passport Verification
+            Terminal</div>
+          <div class="tab-item" data-tab="tab-travelers" data-i18n="immigration.tab_travelers">Traveler Database</div>
+          <div class="tab-item" data-tab="tab-blr-tracking">Live Aircraft Tracking</div>
+        </div>
+
+        <!-- Tab: Verification Terminal -->
+        <div class="tab-content active" id="tab-verify">
+          <div class="immigration-panels">
+            <!-- Left: Camera -->
+            <div class="immigration-panel">
+              <div class="panel-header">
+                <span data-i18n="immigration.camera_label">Live Biometric Feed</span>
+                <span class="camera-active"><span class="camera-dot" id="camera-dot"></span><span
+                    id="camera-label">Starting camera...</span></span>
+              </div>
+              <video id="webcam-feed" autoplay muted playsinline></video>
+              <div class="webcam-controls">
+                <button class="btn btn-primary btn-sm" id="btn-capture" onclick="captureFrame()">
+                  <img src="/svg/icons/camera.svg" style="width:13px;height:13px;filter:invert(1)" alt=""> <span
+                    data-i18n="immigration.capture_btn">Capture Frame</span>
+                </button>
+                <span class="text-muted text-xs" style="margin-left:8px">Frame used for face match analysis</span>
               </div>
             </div>
-            <div style="padding:0 16px 16px">
-              <button class="btn btn-primary" id="btn-scan" style="width:100%" disabled onclick="initiateScan()">
-                <img src="/svg/icons/verified.svg" style="width:14px;height:14px;filter:invert(1)" alt=""> <span data-i18n="immigration.scan_btn">Initiate Verification Scan →</span>
-              </button>
-              <div style="margin-top:8px;font-size:11px;color:var(--color-text-muted);text-align:center">
-                Demo tip: Upload any image file — if filename contains "vikram" or "passport", the demo record (Vikram Singh / Z8892104) will be returned.
+
+            <!-- Right: Document Upload + Scan -->
+            <div class="immigration-panel">
+              <div class="panel-header" data-i18n="immigration.document_label">Document Upload — Passport Scan</div>
+              <div class="dropzone" id="dropzone">
+                <img src="/svg/icons/upload.svg"
+                  style="width:28px;height:28px;color:var(--color-primary);margin:0 auto;filter:invert(35%) sepia(100%) saturate(500%) hue-rotate(185deg)"
+                  alt="">
+                <div class="dropzone-text" data-i18n="immigration.dropzone_text">Drop passport scan here</div>
+                <div class="dropzone-sub" data-i18n="immigration.dropzone_sub">or click to upload — Accepts JPG, PNG,
+                  PDF</div>
+                <input type="file" id="file-input" accept="image/*,.pdf" style="display:none">
+              </div>
+              <div id="scan-container">
+                <div class="scan-status-box">
+                  <div class="scan-status-text" id="scan-status">Upload a passport document to begin...</div>
+                </div>
+              </div>
+              <div style="padding:0 16px 16px">
+                <button class="btn btn-primary" id="btn-scan" style="width:100%" disabled onclick="initiateScan()">
+                  <img src="/svg/icons/verified.svg" style="width:14px;height:14px;filter:invert(1)" alt=""> <span
+                    data-i18n="immigration.scan_btn">Initiate Verification Scan →</span>
+                </button>
+                <div style="margin-top:8px;font-size:11px;color:var(--color-text-muted);text-align:center">
+                  Demo tip: Upload any image file — if filename contains "vikram" or "passport", the demo record (Vikram
+                  Singh / Z8892104) will be returned.
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- Certificate Result -->
+          <div id="cert-container"></div>
         </div>
 
-        <!-- Certificate Result -->
-        <div id="cert-container"></div>
-      </div>
-
-      <!-- Tab: Traveler Database -->
-      <div class="tab-content" id="tab-travelers">
-        <div class="filter-bar">
-          <div class="search-wrap">
-            <img src="/svg/icons/search.svg" style="width:14px;height:14px;position:absolute;left:10px;top:50%;transform:translateY(-50%)" alt="">
-            <input type="search" id="traveler-search" placeholder="Search by name or passport number..." style="padding-left:34px">
+        <!-- Tab: Traveler Database -->
+        <div class="tab-content" id="tab-travelers">
+          <div class="filter-bar">
+            <div class="search-wrap">
+              <img src="/svg/icons/search.svg"
+                style="width:14px;height:14px;position:absolute;left:10px;top:50%;transform:translateY(-50%)" alt="">
+              <input type="search" id="traveler-search" placeholder="Search by name or passport number..."
+                style="padding-left:34px">
+            </div>
+            <select id="traveler-status" style="width:160px">
+              <option value="">All Statuses</option>
+              <option value="Verified">Verified</option>
+              <option value="Pending">Pending</option>
+              <option value="Flagged">Flagged</option>
+            </select>
           </div>
-          <select id="traveler-status" style="width:160px">
-            <option value="">All Statuses</option>
-            <option value="Verified">Verified</option>
-            <option value="Pending">Pending</option>
-            <option value="Flagged">Flagged</option>
-          </select>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Passport No.</th>
+                  <th>Name</th>
+                  <th>Nationality</th>
+                  <th>Gender</th>
+                  <th>DOB</th>
+                  <th>Entry Point</th>
+                  <th>Purpose</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="traveler-tbody">
+                <tr>
+                  <td colspan="8" style="text-align:center;padding:20px;color:var(--color-text-muted)">Select tab to
+                    load travelers</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="table-wrapper">
-          <table>
-            <thead><tr><th>Passport No.</th><th>Name</th><th>Nationality</th><th>Gender</th><th>DOB</th><th>Entry Point</th><th>Purpose</th><th>Status</th></tr></thead>
-            <tbody id="traveler-tbody"><tr><td colspan="8" style="text-align:center;padding:20px;color:var(--color-text-muted)">Select tab to load travelers</td></tr></tbody>
-          </table>
+
+        <!-- Tab: Live Aircraft Tracking -->
+        <div class="tab-content" id="tab-blr-tracking">
+          <div id="blr-map-wrap">
+            <div id="blr-map-header">
+              <span id="blr-aircraft-count">Connecting to OpenSky...</span>
+              <span id="blr-last-updated"></span>
+              <span id="blr-poll-status"></span>
+            </div>
+            <div id="blr-map"></div>
+            <div id="blr-map-footer">
+              Data: OpenSky Network · Updates every 15s · IND bounding box · Experimental
+            </div>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   </div>
-</div>
-<div id="toast-container"></div>
-<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-<script src="/js/config.js"></script>
-<script src="/js/translation.js"></script>
-<script src="/js/ui-components.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/immigration.js"></script>
+  <div id="toast-container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <script src="/js/config.js"></script>
+  <script src="/js/translation.js"></script>
+  <script src="/js/ui-components.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/immigration.js"></script>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/liveaircraft/blr/js/blr-map.js"></script>
 </body>
+
 </html>

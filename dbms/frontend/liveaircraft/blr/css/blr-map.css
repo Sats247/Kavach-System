@@ -1,0 +1,235 @@
+/* ─── Map Wrapper ──────────────────────────────────────────────────── */
+#blr-map-wrap {
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #E2E6EA;
+  background: #F7F8FA;
+  font-family: 'Inter', -apple-system, sans-serif;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+/* ─── Header ───────────────────────────────────────────────────────── */
+#blr-map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: #002147;
+  border-bottom: 1px solid #001533;
+  font-size: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#blr-aircraft-count {
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+
+#blr-last-updated {
+  color: rgba(255,255,255,0.5);
+  font-size: 11px;
+}
+
+#blr-poll-status {
+  color: #FCD34D;
+  font-size: 11px;
+}
+
+/* ─── Map Canvas ───────────────────────────────────────────────────── */
+#blr-map {
+  height: 580px;
+  width: 100%;
+  z-index: 1;
+}
+
+/* ─── Footer ───────────────────────────────────────────────────────── */
+#blr-map-footer {
+  padding: 6px 16px;
+  background: #002147;
+  color: rgba(255,255,255,0.4);
+  font-size: 10px;
+  text-align: center;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-top: 1px solid #001533;
+}
+
+/* ─── Legend ───────────────────────────────────────────────────────── */
+.blr-legend {
+  background: #FFFFFF;
+  border: 1px solid #C8CDD4;
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 12px;
+  color: #1A1F2E;
+  max-width: 230px;
+  line-height: 1.5;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+}
+
+.blr-legend-title {
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #4A5568;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #E2E6EA;
+}
+
+.blr-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #1A1F2E;
+}
+
+.blr-legend-plane {
+  font-size: 13px;
+  width: 16px;
+  text-align: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.blr-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.blr-legend-note {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid #E2E6EA;
+  color: #8A95A3;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+/* ─── Popup ────────────────────────────────────────────────────────── */
+.blr-popup {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 12px;
+  color: #1A1F2E;
+  min-width: 200px;
+}
+
+.blr-popup-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #002147;
+  margin-bottom: 8px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #E2E6EA;
+}
+
+.blr-popup-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.blr-popup-table td {
+  padding: 3px 0;
+  vertical-align: top;
+}
+
+.blr-popup-table td:first-child {
+  color: #8A95A3;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-right: 12px;
+  white-space: nowrap;
+}
+
+.blr-popup-table code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 11px;
+  background: #F7F8FA;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: #0057B8;
+}
+
+/* Status badges in popup */
+.blr-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.blr-badge.status-arrive {
+  background: #E6F5ED;
+  color: #1A7F4B;
+  border: 1px solid #bbdccc;
+}
+
+.blr-badge.status-depart {
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #f5d99a;
+}
+
+.blr-badge.status-cruise {
+  background: #EBF3FF;
+  color: #0057B8;
+  border: 1px solid #b3d1f5;
+}
+
+.blr-badge.badge-intl {
+  background: #EBF3FF;
+  color: #003D8A;
+  border: 1px solid #b3d1f5;
+}
+
+.blr-popup-footer {
+  margin-top: 9px;
+  font-size: 10px;
+  color: #C8CDD4;
+  text-align: right;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Leaflet popup skin overrides ─────────────────────────────────── */
+.leaflet-popup-content-wrapper {
+  background: #FFFFFF !important;
+  border: 1px solid #C8CDD4 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12) !important;
+  color: #1A1F2E !important;
+}
+
+.leaflet-popup-tip {
+  background: #FFFFFF !important;
+}
+
+.leaflet-popup-close-button {
+  color: #8A95A3 !important;
+  font-size: 16px !important;
+}
+
+/* ─── Leaflet attribution ───────────────────────────────────────────── */
+.leaflet-control-attribution {
+  font-size: 9px !important;
+  background: rgba(255,255,255,0.85) !important;
+  color: #8A95A3 !important;
+}
+
+.leaflet-control-attribution a {
+  color: #0057B8 !important;
+}

@@ -329,53 +329,66 @@ async function submitNewVessel() {
   }
 }
 
-let _chartVesselTypes, _chartDocked, _chartFlags;
+let _chartThroughput, _chartCommodity;
 
 function loadSeaCharts() {
-  // Vessel type bar chart
-  const typeCtx = document.getElementById('chart-vessel-types')?.getContext('2d');
-  if (typeCtx && _vessels.length) {
-    const typeCounts = {};
-    _vessels.forEach(v => { typeCounts[v.vessel_type] = (typeCounts[v.vessel_type]||0)+1; });
-    if (_chartVesselTypes) _chartVesselTypes.destroy();
-    _chartVesselTypes = new Chart(typeCtx, {
-      type:'bar',
-      data:{ labels:Object.keys(typeCounts), datasets:[{data:Object.values(typeCounts),backgroundColor:'#0057B8',borderRadius:4}] },
-      options:{ indexAxis:'y', plugins:{ legend:{display:false} }, scales:{ x:{grid:{color:'#F0F0F0'}}, y:{grid:{display:false}, ticks:{font:{size:10}}} }, responsive:true, maintainAspectRatio:false }
-    });
-  }
-
-  // Status Profile pie chart
-  const dockedCtx = document.getElementById('chart-docked-status')?.getContext('2d');
-  if (dockedCtx && _vessels.length) {
-    const statusCounts = {};
-    _vessels.forEach(v => {
-      if (['Docked at Port', 'Approaching on Water', 'Departing from Port'].includes(v.status)) {
-        statusCounts[v.status] = (statusCounts[v.status] || 0) + 1;
-      } else {
-        statusCounts['Other'] = (statusCounts['Other'] || 0) + 1;
+  // ── CHART 1: Cargo Throughput Bar Chart ──────────────────────────────────────
+  const throughputCtx = document.getElementById('chart-throughput')?.getContext('2d');
+  if (throughputCtx) {
+    const throughputData = [
+      { port: "JNPT",         cargo: 78.1 }, { port: "Mundra",       cargo: 155.2 },
+      { port: "Paradip",      cargo: 132.6 }, { port: "Vizag",        cargo: 74.3 },
+      { port: "Chennai",      cargo: 134.0 }, { port: "Kandla",       cargo: 134.0 },
+      { port: "Kochi",        cargo: 29.8 },  { port: "Mormugao",     cargo: 26.1 },
+      { port: "Ennore",       cargo: 43.7 },  { port: "Haldia",       cargo: 44.1 },
+      { port: "New Mangalore",cargo: 40.2 },  { port: "Mumbai",       cargo: 21.5 }
+    ];
+    // Professional blue color for all bars
+    const portColors = Array(throughputData.length).fill("#0057B8");
+    if (_chartThroughput) _chartThroughput.destroy();
+    _chartThroughput = new Chart(throughputCtx, {
+      type: 'bar',
+      data: {
+        labels: throughputData.map(d => d.port),
+        datasets: [{ data: throughputData.map(d => d.cargo), backgroundColor: portColors, borderRadius: 2 }]
+      },
+      options: {
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 45, minRotation: 45 } },
+          y: { grid: { color: '#F0F0F0' }, ticks: { font: { size: 10 } } }
+        },
+        responsive: true, maintainAspectRatio: false
       }
     });
-    const statusColors = ['#0057B8', '#1A7F4B', '#D97706', '#6B7280'];
-    if (_chartDocked) _chartDocked.destroy();
-    _chartDocked = new Chart(dockedCtx, {
-      type: 'pie',
-      data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: statusColors, borderWidth: 2, borderColor: '#fff' }] },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10 } } } }
-    });
   }
 
-  // Flag state pie chart
-  const flagCtx = document.getElementById('chart-flags')?.getContext('2d');
-  if (flagCtx && _vessels.length) {
-    const flagCounts = {};
-    _vessels.forEach(v => { const f = v.flag_state.split('(')[0].trim(); flagCounts[f]=(flagCounts[f]||0)+1; });
+  // ── CHART 2: Commodity Breakdown Donut ───────────────────────────────────────
+  const commodityCtx = document.getElementById('chart-commodity')?.getContext('2d');
+  if (commodityCtx) {
+    const commodityData = [
+      { name: "Crude Oil",   value: 28 }, { name: "Coal",        value: 22 },
+      { name: "Containers",  value: 19 }, { name: "Fertilizers", value: 11 },
+      { name: "Iron Ore",    value: 9 },  { name: "LPG/LNG",     value: 7 },
+      { name: "Others",      value: 4 }
+    ];
+    // Professional color palette from previous flag chart
     const colors = ['#0057B8','#002147','#1A7F4B','#D97706','#DC2626','#0284C7','#8B5CF6','#6B7280'];
-    if (_chartFlags) _chartFlags.destroy();
-    _chartFlags = new Chart(flagCtx, {
-      type:'pie',
-      data:{ labels:Object.keys(flagCounts), datasets:[{data:Object.values(flagCounts),backgroundColor:colors,borderWidth:2,borderColor:'#fff'}] },
-      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ font:{size:10}, boxWidth:10 } } } }
+    if (_chartCommodity) _chartCommodity.destroy();
+    _chartCommodity = new Chart(commodityCtx, {
+      type: 'doughnut',
+      data: {
+        labels: commodityData.map(d => d.name),
+        datasets: [{ data: commodityData.map(d => d.value), backgroundColor: colors, borderWidth: 1, borderColor: '#fff' }]
+      },
+      options: {
+        plugins: {
+          legend: { position: 'right', labels: { font: { size: 11 }, usePointStyle: true, boxWidth: 8 } }
+        },
+        responsive: true, maintainAspectRatio: false, layout: { padding: 10 }
+      }
     });
   }
 }

@@ -8,6 +8,7 @@ from routes.sea_marshall import sea_marshall_bp
 from routes.immigration import immigration_bp
 from routes.ngo import ngo_bp
 from routes.refugee import refugee_bp
+from routes.opensky import opensky_bp
 import os
 
 
@@ -30,6 +31,7 @@ def create_app():
     app.register_blueprint(immigration_bp,   url_prefix='/api/immigration')
     app.register_blueprint(ngo_bp,           url_prefix='/api/ngo')
     app.register_blueprint(refugee_bp,       url_prefix='/api/refugee')
+    app.register_blueprint(opensky_bp)  # route: /api/opensky (no prefix — defined in blueprint)
 
     @app.route('/')
     def serve_index():
