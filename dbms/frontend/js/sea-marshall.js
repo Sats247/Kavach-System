@@ -394,6 +394,23 @@ function loadSeaCharts() {
 }
 
 
+window.switchSmTab = function(tab) {
+  document.getElementById('btn-tab-dashboard').classList.remove('active');
+  document.getElementById('btn-tab-marine').classList.remove('active');
+  document.getElementById('panel-dashboard').style.display = 'none';
+  document.getElementById('panel-marine').style.display = 'none';
+
+  if (tab === 'dashboard') {
+    document.getElementById('btn-tab-dashboard').classList.add('active');
+    document.getElementById('panel-dashboard').style.display = 'block';
+    if (window.stopMarineMap) window.stopMarineMap();
+  } else if (tab === 'marine') {
+    document.getElementById('btn-tab-marine').classList.add('active');
+    document.getElementById('panel-marine').style.display = 'block';
+    if (window.initMarineMap) window.initMarineMap();
+  }
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
   await loadVessels();
   loadSeaCharts();

@@ -1,130 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DBMS — Sea Marshall Command</title>
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/sea-marshall.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
+
 <body>
-<div class="app-shell">
-  <nav class="sidebar">
-    <div class="sidebar-brand">
-      <img src="/svg/dbms-logo.svg" style="width:32px;height:32px" alt="DBMS">
-      <div><div class="sidebar-brand-text">DBMS</div><div class="sidebar-brand-sub">Sea Marshall Command</div></div>
+  <div class="app-shell">
+    <nav class="sidebar">
+      <div class="sidebar-brand">
+        <img src="/svg/dbms-logo.svg" style="width:32px;height:32px" alt="DBMS">
+        <div>
+          <div class="sidebar-brand-text">DBMS</div>
+          <div class="sidebar-brand-sub">Sea Marshall Command</div>
+        </div>
+      </div>
+      <div class="sidebar-nav">
+        <div class="sidebar-section-label">Navigation</div>
+        <a href="/pages/dashboard.html" class="nav-item"><img src="/svg/icons/dashboard.svg"
+            style="width:16px;filter:invert(1)" alt=""><span>Dashboard</span></a>
+        <hr class="sidebar-divider">
+        <a href="/pages/sea-marshall.html" class="nav-item active"><img src="/svg/icons/custom-anchor.svg"
+            style="width:16px;filter:invert(1)" alt=""><span>Sea Marshall</span></a>
+        <a href="/pages/immigration.html" class="nav-item"><img src="/svg/icons/passport.svg"
+            style="width:16px;filter:invert(1)" alt=""><span>Immigration</span></a>
+        <hr class="sidebar-divider">
+        <a href="/pages/ngo-portal.html" class="nav-item"><img src="/svg/icons/heart-svgrepo-com.svg"
+            style="width:16px;filter:invert(1)" alt=""><span>NGO Portal</span></a>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="lang-pills"><button class="lang-pill active" data-lang="en">EN</button><button class="lang-pill"
+            data-lang="hi">हि</button></div>
+        <div class="sidebar-user" id="sidebar-user-info">Loading...</div>
+        <button class="btn btn-secondary" id="logout-btn" style="width:100%;font-size:11px">← Logout</button>
+      </div>
+    </nav>
+    <div class="main-content">
+      <header class="top-header">
+        <div class="breadcrumb">Sea Marshall › <strong>Vessel Traffic Management</strong></div>
+        <div class="header-right">
+          <div class="live-clock" id="live-clock">—</div>
+          <div class="system-badge">System Online</div>
+        </div>
+      </header>
+      <main class="content-area">
+        <style>
+          .sm-tab-btn {
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: #E6E9F0;
+            color: #5F6B7A;
+            transition: all 0.2s;
+          }
+
+          .sm-tab-btn.active {
+            background: #D0D9E8;
+            color: #1A1A2E;
+          }
+
+          .sm-tab-btn:hover:not(.active) {
+            background: #DCE2ED;
+          }
+
+          @keyframes mv-live-pulse {
+
+            0%,
+            100% {
+              opacity: 1;
+            }
+
+            50% {
+              opacity: 0.3;
+            }
+          }
+        </style>
+        <div style="display:flex;gap:12px;margin-bottom:16px;">
+          <button id="btn-tab-dashboard" class="sm-tab-btn active" onclick="switchSmTab('dashboard')">Dashboard</button>
+          <button id="btn-tab-marine" class="sm-tab-btn" onclick="switchSmTab('marine')">Marine-Traffic</button>
+        </div>
+
+        <div id="panel-dashboard">
+          <!-- KPI Row -->
+          <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+            <div class="kpi-card" style="border-left-color:var(--color-primary)">
+              <div class="kpi-label">Total Vessels</div>
+              <div class="kpi-value" id="kpi-total">—</div>
+              <div class="kpi-delta">In Indian waters / EEZ</div>
+            </div>
+            <div class="kpi-card" style="border-left-color:var(--color-success)">
+              <div class="kpi-label">Cleared for Entry</div>
+              <div class="kpi-value text-success" id="kpi-cleared">—</div>
+              <div class="kpi-delta up">✓ No security concerns</div>
+            </div>
+            <div class="kpi-card" style="border-left-color:var(--color-info)">
+              <div class="kpi-label">Under Inspection</div>
+              <div class="kpi-value" id="kpi-inspected">—</div>
+              <div class="kpi-delta">Boarded / intercepted</div>
+            </div>
+            <div class="kpi-card" style="border-left-color:var(--color-alert)">
+              <div class="kpi-label">Critical Alerts</div>
+              <div class="kpi-value text-danger" id="kpi-alerts">—</div>
+              <div class="kpi-delta down">⚠ Immediate action required</div>
+            </div>
+          </div>
+
+          <!-- Manual IMO Lookup Bar -->
+          <div class="card" style="margin-bottom:16px;padding:14px 20px">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+              <div
+                style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-text-muted);white-space:nowrap">
+                🔍 Manual IMO Lookup
+              </div>
+              <div style="display:flex;flex:1;gap:8px;max-width:480px">
+                <input type="text" id="imo-lookup-input"
+                  placeholder="Enter IMO number (e.g. 9234567) and press Enter..." style="flex:1"
+                  onkeypress="if(event.key==='Enter') lookupByIMO()">
+                <button class="btn btn-primary btn-sm" onclick="lookupByIMO()">Look Up →</button>
+              </div>
+              <div style="font-size:11px;color:var(--color-text-muted)">
+                Opens full vessel profile in inspection panel. Works for any IMO in the register.
+              </div>
+            </div>
+          </div>
+
+          <!-- Vessel Table -->
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Vessel Traffic Register — Indian EEZ</span>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-primary btn-sm" onclick="showAddVesselModal()">+ Log New Vessel</button>
+                <button class="btn btn-secondary btn-sm" onclick="loadVessels()">↻ Refresh</button>
+              </div>
+            </div>
+            <div class="table-wrapper" style="max-height:520px;overflow-y:auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th>IMO</th>
+                    <th>Vessel Name</th>
+                    <th>Type</th>
+                    <th>Flag State</th>
+                    <th>Cargo</th>
+                    <th>Gross Tonnage</th>
+                    <th>Destination</th>
+                    <th>ETA</th>
+                    <th>Captain</th>
+                    <th>Crew</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="vessel-tbody">
+                  <tr>
+                    <td colspan="12" style="text-align:center;padding:20px;color:var(--color-text-muted)">Loading...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Analytics -->
+          <div class="sea-charts" style="grid-template-columns: repeat(2, 1fr); gap: 16px;">
+            <div class="chart-card">
+              <div class="chart-title">Traffic · FY2024 — Cargo Throughput by Port (MMT)</div>
+              <div class="chart-canvas-wrap" style="height:220px;"><canvas id="chart-throughput"></canvas></div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-title">Cargo Mix · All Ports — Commodity Breakdown</div>
+              <div class="chart-canvas-wrap" style="height:220px;"><canvas id="chart-commodity"></canvas></div>
+            </div>
+          </div>
+        </div> <!-- End panel-dashboard -->
+
+        <div id="panel-marine" style="display:none; margin: 0 -24px -24px -24px;">
+          <div id="marine-wrap">
+
+            <!-- Header bar — keep existing government style -->
+            <div style="
+            background: #003366;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+          ">
+              <div>
+                <div style="font-size:14px;font-weight:500;color:#fff">
+                  Indian Ocean Region — Marine Traffic
+                </div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px">
+                  India · Arabian Sea · Bay of Bengal · Gulf · Malacca Strait
+                </div>
+                <div style="display:flex;align-items:center;gap:5px;margin-top:4px">
+                  <div style="
+                  width:7px;height:7px;border-radius:50%;
+                  background:#4ade80;
+                  animation:mv-live-pulse 2s infinite;
+                "></div>
+                  <div style="font-size:10px;color:rgba(255,255,255,0.6)">
+                    Live · MarineTraffic AIS Network
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+                <div id="mv-clock" style="
+                font-size:16px;font-weight:500;color:#fff;font-family:monospace
+              ">--:--:--</div>
+                <div id="mv-date" style="font-size:10px;color:rgba(255,255,255,0.5)">
+                  --
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats strip -->
+            <div style="
+            display:grid;
+            grid-template-columns:repeat(4,minmax(0,1fr));
+            border-bottom:0.5px solid #d0d9e8;
+          ">
+              <div style="padding:9px 14px;border-right:0.5px solid #d0d9e8;background:#fff">
+                <div style="font-size:18px;font-weight:500;color:#1a1a2e;font-family:monospace">
+                  Live
+                </div>
+                <div style="font-size:10px;color:#6b7a8d;text-transform:uppercase;
+                letter-spacing:0.4px;margin-top:1px">
+                  Vessel Data
+                </div>
+              </div>
+              <div style="padding:9px 14px;border-right:0.5px solid #d0d9e8;background:#fff">
+                <div style="font-size:18px;font-weight:500;color:#0C447C;font-family:monospace">
+                  AIS
+                </div>
+                <div style="font-size:10px;color:#6b7a8d;text-transform:uppercase;
+                letter-spacing:0.4px;margin-top:1px">
+                  Data Source
+                </div>
+              </div>
+              <div style="padding:9px 14px;border-right:0.5px solid #d0d9e8;background:#fff">
+                <div style="font-size:18px;font-weight:500;color:#27500A;font-family:monospace">
+                  Global
+                </div>
+                <div style="font-size:10px;color:#6b7a8d;text-transform:uppercase;
+                letter-spacing:0.4px;margin-top:1px">
+                  Coverage
+                </div>
+              </div>
+              <div style="padding:9px 14px;background:#fff">
+                <div style="font-size:18px;font-weight:500;color:#633806;font-family:monospace">
+                  Real-time
+                </div>
+                <div style="font-size:10px;color:#6b7a8d;text-transform:uppercase;
+                letter-spacing:0.4px;margin-top:1px">
+                  Updates
+                </div>
+              </div>
+            </div>
+
+            <!-- MarineTraffic embedded map -->
+            <div style="width:100%;height:100%;border-bottom:0.5px solid #d0d9e8">
+              <script type="text/javascript">
+                width = '100%';
+                height = '850';
+                border = '0';
+                shownames = 'true';
+                latitude = '15.00';
+                longitude = '78.00';
+                zoom = '5';
+                maptype = '0';
+                trackvessel = '0';
+                fleet = '';
+              </script>
+              <script type="text/javascript" src="https://www.marinetraffic.com/js/embed.js">
+              </script>
+            </div>
+
+            <!-- Footer -->
+            <div style="
+            padding:8px 16px;
+            background:#f0f4f9;
+            border-top:0.5px solid #d0d9e8;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            flex-wrap:wrap;
+            gap:8px;
+          ">
+              <div style="font-size:11px;color:#6b7a8d">
+                Powered by
+                <a href="https://www.marinetraffic.com" target="_blank"
+                  style="color:#003366;text-decoration:none;font-weight:500">
+                  MarineTraffic
+                </a>
+                · Real-time AIS vessel positions · Indian Ocean Region
+              </div>
+              <div style="font-size:11px;color:#9aa5b4;font-family:monospace" id="mv-upd">--</div>
+            </div>
+
+          </div>
+        </div>
+      </main>
     </div>
-    <div class="sidebar-nav">
-      <div class="sidebar-section-label">Navigation</div>
-      <a href="/pages/dashboard.html" class="nav-item"><img src="/svg/icons/dashboard.svg" style="width:16px;filter:invert(1)" alt=""><span>Dashboard</span></a>
-      <hr class="sidebar-divider">
-      <a href="/pages/sea-marshall.html" class="nav-item active"><img src="/svg/icons/ship.svg" style="width:16px;filter:invert(1)" alt=""><span>Sea Marshall</span></a>
-      <a href="/pages/immigration.html" class="nav-item"><img src="/svg/icons/passport.svg" style="width:16px;filter:invert(1)" alt=""><span>Immigration</span></a>
-      <hr class="sidebar-divider">
-      <a href="/pages/ngo-portal.html" class="nav-item"><img src="/svg/icons/ngo.svg" style="width:16px;filter:invert(1)" alt=""><span>NGO Portal</span></a>
-    </div>
-    <div class="sidebar-bottom">
-      <div class="lang-pills"><button class="lang-pill active" data-lang="en">EN</button><button class="lang-pill" data-lang="hi">हि</button></div>
-      <div class="sidebar-user" id="sidebar-user-info">Loading...</div>
-      <button class="btn btn-secondary" id="logout-btn" style="width:100%;font-size:11px">← Logout</button>
-    </div>
-  </nav>
-  <div class="main-content">
-    <header class="top-header">
-      <div class="breadcrumb">Sea Marshall › <strong>Vessel Traffic Management</strong></div>
-      <div class="header-right">
-        <div class="live-clock" id="live-clock">—</div>
-        <div class="system-badge">System Online</div>
-      </div>
-    </header>
-    <main class="content-area">
-      <!-- KPI Row -->
-      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
-        <div class="kpi-card" style="border-left-color:var(--color-primary)">
-          <div class="kpi-label">Total Vessels</div><div class="kpi-value" id="kpi-total">—</div>
-          <div class="kpi-delta">In Indian waters / EEZ</div>
-        </div>
-        <div class="kpi-card" style="border-left-color:var(--color-success)">
-          <div class="kpi-label">Cleared for Entry</div><div class="kpi-value text-success" id="kpi-cleared">—</div>
-          <div class="kpi-delta up">✓ No security concerns</div>
-        </div>
-        <div class="kpi-card" style="border-left-color:var(--color-info)">
-          <div class="kpi-label">Under Inspection</div><div class="kpi-value" id="kpi-inspected">—</div>
-          <div class="kpi-delta">Boarded / intercepted</div>
-        </div>
-        <div class="kpi-card" style="border-left-color:var(--color-alert)">
-          <div class="kpi-label">Critical Alerts</div><div class="kpi-value text-danger" id="kpi-alerts">—</div>
-          <div class="kpi-delta down">⚠ Immediate action required</div>
-        </div>
-      </div>
-
-      <!-- Manual IMO Lookup Bar -->
-      <div class="card" style="margin-bottom:16px;padding:14px 20px">
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-text-muted);white-space:nowrap">
-            🔍 Manual IMO Lookup
-          </div>
-          <div style="display:flex;flex:1;gap:8px;max-width:480px">
-            <input
-              type="text"
-              id="imo-lookup-input"
-              placeholder="Enter IMO number (e.g. 9234567) and press Enter..."
-              style="flex:1"
-              onkeypress="if(event.key==='Enter') lookupByIMO()"
-            >
-            <button class="btn btn-primary btn-sm" onclick="lookupByIMO()">Look Up →</button>
-          </div>
-          <div style="font-size:11px;color:var(--color-text-muted)">
-            Opens full vessel profile in inspection panel. Works for any IMO in the register.
-          </div>
-        </div>
-      </div>
-
-      <!-- Vessel Table -->
-
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Vessel Traffic Register — Indian EEZ</span>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-primary btn-sm" onclick="showAddVesselModal()">+ Log New Vessel</button>
-            <button class="btn btn-secondary btn-sm" onclick="loadVessels()">↻ Refresh</button>
-          </div>
-        </div>
-        <div class="table-wrapper" style="max-height:520px;overflow-y:auto">
-          <table>
-            <thead>
-              <tr>
-                <th>IMO</th><th>Vessel Name</th><th>Type</th><th>Flag State</th>
-                <th>Cargo</th><th>Gross Tonnage</th><th>Destination</th>
-                <th>ETA</th><th>Captain</th><th>Crew</th><th>Status</th><th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="vessel-tbody"><tr><td colspan="12" style="text-align:center;padding:20px;color:var(--color-text-muted)">Loading...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Analytics -->
-      <div class="sea-charts" style="grid-template-columns: repeat(2, 1fr); gap: 16px;">
-        <div class="chart-card">
-          <div class="chart-title">Traffic · FY2024 — Cargo Throughput by Port (MMT)</div>
-          <div class="chart-canvas-wrap" style="height:220px;"><canvas id="chart-throughput"></canvas></div>
-        </div>
-        
-        <div class="chart-card">
-          <div class="chart-title">Cargo Mix · All Ports — Commodity Breakdown</div>
-          <div class="chart-canvas-wrap" style="height:220px;"><canvas id="chart-commodity"></canvas></div>
-        </div>
-      </div>
-    </main>
   </div>
-</div>
-<div id="toast-container"></div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="/js/config.js"></script>
-<script src="/js/translation.js"></script>
-<script src="/js/ui-components.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/sea-marshall.js"></script>
+  <div id="toast-container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="/js/config.js"></script>
+  <script src="/js/translation.js"></script>
+  <script src="/js/ui-components.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/sea-marshall.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/js/marine-map.js"></script>
 </body>
+
 </html>

@@ -185,5 +185,22 @@
     "status": "Approaching on Water",
     "is_flagged": false,
     "flag_reason": null
+  },
+  {
+    "imo": "098765432",
+    "vessel_name": "testing123",
+    "vessel_type": "Fishing",
+    "country_of_origin": "India",
+    "flag_state": "India",
+    "cargo": "Unknown",
+    "gross_tonnage": 0,
+    "destination_port": "Unknown",
+    "eta": "2026-03-26",
+    "last_port": "Unknown",
+    "captain": "Capt. Kumar",
+    "crew_count": 0,
+    "status": "Approaching on Water",
+    "is_flagged": false,
+    "flag_reason": null
   }
 ]

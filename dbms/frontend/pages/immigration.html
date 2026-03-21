@@ -26,11 +26,11 @@
             style="width:16px;filter:invert(1)" alt=""><span>Dashboard</span></a>
         <hr class="sidebar-divider">
         <a href="/pages/immigration.html" class="nav-item active"><img src="/svg/icons/passport.svg"
-            style="width:16px;filter:invert(1)" alt=""><span>Immigration Patrol</span></a>
-        <a href="/pages/sea-marshall.html" class="nav-item"><img src="/svg/icons/ship.svg"
+            style="width:24px;filter:invert(1)" alt=""><span>Immigration Patrol</span></a>
+        <a href="/pages/sea-marshall.html" class="nav-item"><img src="/svg/icons/custom-anchor.svg"
             style="width:16px;filter:invert(1)" alt=""><span>Sea Marshall</span></a>
         <hr class="sidebar-divider">
-        <a href="/pages/ngo-portal.html" class="nav-item"><img src="/svg/icons/ngo.svg"
+        <a href="/pages/ngo-portal.html" class="nav-item"><img src="/svg/icons/heart-svgrepo-com.svg"
             style="width:16px;filter:invert(1)" alt=""><span>NGO Portal</span></a>
       </div>
       <div class="sidebar-bottom">
@@ -178,109 +178,164 @@
         <!-- Tab: Arrivals & Departures -->
         <div class="tab-content" id="tab-flights">
           <style scoped>
-          .fb-stat-cell {
-            padding: 10px 14px;
-            background: #fff;
-          }
-          .fb-stat-val {
-            font-size: 20px;
-            font-weight: 500;
-            color: #1a1a2e;
-            font-family: monospace;
-          }
-          .fb-stat-lbl {
-            font-size: 10px;
-            color: #6b7a8d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 2px;
-          }
-          .fb-th {
-            padding: 8px 12px;
-            text-align: left;
-            font-size: 10px;
-            color: #1a1a2e;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-            border-right: 1px solid rgba(0,0,0,0.1);
-          }
-          .fb-th:last-child { border-right: none; }
-          .fb-td {
-            padding: 9px 12px;
-            border-bottom: 0.5px solid #e4eaf2;
-            color: #1a1a2e;
-            white-space: normal;
-            word-break: break-word;
-            vertical-align: middle;
-          }
-          .fb-tr-even .fb-td { background: #f7f9fc; }
-          .fb-tr:hover .fb-td { background: #e8f0f8; }
+            .fb-stat-cell {
+              padding: 10px 14px;
+              background: #fff;
+            }
 
-          /* Direction badge */
-          .fb-dir-arr {
-            display: inline-block;
-            padding: 2px 7px;
-            border-radius: 3px;
-            font-size: 10px;
-            font-weight: 500;
-            font-family: monospace;
-            background: #E1F5EE;
-            color: #085041;
-          }
-          .fb-dir-dep {
-            display: inline-block;
-            padding: 2px 7px;
-            border-radius: 3px;
-            font-size: 10px;
-            font-weight: 500;
-            font-family: monospace;
-            background: #E6F1FB;
-            color: #0C447C;
-          }
+            .fb-stat-val {
+              font-size: 20px;
+              font-weight: 500;
+              color: #1a1a2e;
+              font-family: monospace;
+            }
 
-          /* Status badges */
-          .fb-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-size: 10px;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-          }
-          .fb-b-enroute   { background:#E6F1FB; color:#0C447C; }
-          .fb-b-landed    { background:#EAF3DE; color:#27500A; }
-          .fb-b-boarding  { background:#FAEEDA; color:#633806; }
-          .fb-b-delayed   { background:#FCEBEB; color:#791F1F; }
-          .fb-b-scheduled { background:#f0f4f9; color:#5f6b7a; border:0.5px solid #d0d9e8; }
-          .fb-b-cancelled { background:#FCEBEB; color:#501313; border:0.5px solid #F09595; }
+            .fb-stat-lbl {
+              font-size: 10px;
+              color: #6b7a8d;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              margin-top: 2px;
+            }
 
-          /* Filter buttons */
-          .fb-filter-btn {
-            padding: 5px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            border: 0.5px solid #b0bcd0;
-            background: transparent;
-            color: #5f6b7a;
-            font-family: monospace;
-            transition: all 0.12s;
-          }
-          .fb-filter-btn:hover { background: #e8f0f8; color: #003366; }
-          .fb-filter-on {
-            background: #003366 !important;
-            color: #fff !important;
-            border-color: #003366 !important;
-          }
+            .fb-th {
+              padding: 8px 12px;
+              text-align: left;
+              font-size: 10px;
+              color: #1a1a2e;
+              font-weight: 500;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              white-space: nowrap;
+              border-right: 1px solid rgba(0, 0, 0, 0.1);
+            }
 
-          /* Live dot pulse */
-          #fb-live-dot { animation: fb-pulse 2s infinite; }
-          @keyframes fb-pulse {
-            0%,100% { opacity:1; }
-            50%      { opacity:0.3; }
-          }
+            .fb-th:last-child {
+              border-right: none;
+            }
+
+            .fb-td {
+              padding: 9px 12px;
+              border-bottom: 0.5px solid #e4eaf2;
+              color: #1a1a2e;
+              white-space: normal;
+              word-break: break-word;
+              vertical-align: middle;
+            }
+
+            .fb-tr-even .fb-td {
+              background: #f7f9fc;
+            }
+
+            .fb-tr:hover .fb-td {
+              background: #e8f0f8;
+            }
+
+            /* Direction badge */
+            .fb-dir-arr {
+              display: inline-block;
+              padding: 2px 7px;
+              border-radius: 3px;
+              font-size: 10px;
+              font-weight: 500;
+              font-family: monospace;
+              background: #E1F5EE;
+              color: #085041;
+            }
+
+            .fb-dir-dep {
+              display: inline-block;
+              padding: 2px 7px;
+              border-radius: 3px;
+              font-size: 10px;
+              font-weight: 500;
+              font-family: monospace;
+              background: #E6F1FB;
+              color: #0C447C;
+            }
+
+            /* Status badges */
+            .fb-badge {
+              display: inline-block;
+              padding: 2px 8px;
+              border-radius: 3px;
+              font-size: 10px;
+              font-weight: 500;
+              letter-spacing: 0.3px;
+            }
+
+            .fb-b-enroute {
+              background: #E6F1FB;
+              color: #0C447C;
+            }
+
+            .fb-b-landed {
+              background: #EAF3DE;
+              color: #27500A;
+            }
+
+            .fb-b-boarding {
+              background: #FAEEDA;
+              color: #633806;
+            }
+
+            .fb-b-delayed {
+              background: #FCEBEB;
+              color: #791F1F;
+            }
+
+            .fb-b-scheduled {
+              background: #f0f4f9;
+              color: #5f6b7a;
+              border: 0.5px solid #d0d9e8;
+            }
+
+            .fb-b-cancelled {
+              background: #FCEBEB;
+              color: #501313;
+              border: 0.5px solid #F09595;
+            }
+
+            /* Filter buttons */
+            .fb-filter-btn {
+              padding: 5px 14px;
+              border-radius: 20px;
+              font-size: 12px;
+              cursor: pointer;
+              border: 0.5px solid #b0bcd0;
+              background: transparent;
+              color: #5f6b7a;
+              font-family: monospace;
+              transition: all 0.12s;
+            }
+
+            .fb-filter-btn:hover {
+              background: #e8f0f8;
+              color: #003366;
+            }
+
+            .fb-filter-on {
+              background: #003366 !important;
+              color: #fff !important;
+              border-color: #003366 !important;
+            }
+
+            /* Live dot pulse */
+            #fb-live-dot {
+              animation: fb-pulse 2s infinite;
+            }
+
+            @keyframes fb-pulse {
+
+              0%,
+              100% {
+                opacity: 1;
+              }
+
+              50% {
+                opacity: 0.3;
+              }
+            }
           </style>
 
           <div id="panel-flights">
@@ -309,15 +364,21 @@
                   line-height: 1;
                 " id="fb-iata">BLR</div>
                 <div>
-                  <div style="font-size: 14px; font-weight: 500; color: #003366;" id="fb-airport-name">Kempegowda International Airport</div>
-                  <div style="font-size: 11px; color: #6b7a8d; margin-top: 2px;" id="fb-airport-city">Bengaluru, Karnataka — India</div>
-                  <div style="font-size: 10px; color: #9aa5b4; margin-top: 1px; text-transform: uppercase; letter-spacing: 0.5px;">International Flight Board</div>
+                  <div style="font-size: 14px; font-weight: 500; color: #003366;" id="fb-airport-name">Kempegowda
+                    International Airport</div>
+                  <div style="font-size: 11px; color: #6b7a8d; margin-top: 2px;" id="fb-airport-city">Bengaluru,
+                    Karnataka — India</div>
+                  <div
+                    style="font-size: 10px; color: #9aa5b4; margin-top: 1px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    International Flight Board</div>
                 </div>
               </div>
 
               <!-- Right: clock + live indicator -->
               <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
-                <div id="fb-clock" style="font-size: 20px; font-weight: 500; color: #003366; font-family: monospace; line-height: 1;">--:--:--</div>
+                <div id="fb-clock"
+                  style="font-size: 20px; font-weight: 500; color: #003366; font-family: monospace; line-height: 1;">
+                  --:--:--</div>
                 <div id="fb-date" style="font-size: 11px; color: #6b7a8d;">--</div>
                 <div style="display:flex;align-items:center;gap:5px;margin-top:2px;font-size:10px;color:#9aa5b4">
                   <div id="fb-live-dot" style="width:6px;height:6px;border-radius:50%;background:#4ade80;"></div>
@@ -361,14 +422,12 @@
               flex-wrap:wrap;
             ">
               <!-- Airport selector -->
-              <select id="fb-airport-sel"
-                onchange="fbChangeAirport(this.value)"
+              <select id="fb-airport-sel" onchange="fbChangeAirport(this.value)"
                 style="min-width:260px;font-size:12px;padding:5px 10px;border-radius:6px;border:0.5px solid #b0bcd0;background:#fff;color:#1a1a2e;font-family:monospace">
               </select>
 
               <!-- Search -->
-              <input type="text" id="fb-search"
-                placeholder="Search flight, city, airline, country..."
+              <input type="text" id="fb-search" placeholder="Search flight, city, airline, country..."
                 oninput="fbRenderTable()"
                 style="font-size:12px;padding:5px 10px;border-radius:6px;border:0.5px solid #b0bcd0;background:#fff;color:#1a1a2e;width:220px">
 

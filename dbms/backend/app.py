@@ -13,6 +13,7 @@ from routes.ngo import ngo_bp
 from routes.refugee import refugee_bp
 from routes.opensky import opensky_bp
 from routes.aviationstack import aviationstack_bp
+from routes.aisstream import aisstream_bp
 import os
 
 AVIATIONSTACK_KEY = os.environ.get('AVIATIONSTACK_KEY')
@@ -41,6 +42,7 @@ def create_app():
     app.register_blueprint(refugee_bp,       url_prefix='/api/refugee')
     app.register_blueprint(opensky_bp)  # route: /api/opensky (no prefix — defined in blueprint)
     app.register_blueprint(aviationstack_bp)
+    app.register_blueprint(aisstream_bp)
 
     @app.route('/')
     def serve_index():

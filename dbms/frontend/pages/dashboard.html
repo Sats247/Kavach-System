@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,65 +9,59 @@
   <link rel="stylesheet" href="/css/dashboard.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
+
 <body>
-<div class="app-shell">
-  <!-- Sidebar -->
-  <nav class="sidebar">
-    <div class="sidebar-brand">
-      <img src="/svg/dbms-logo.svg" style="width:32px;height:32px" alt="DBMS">
-      <div>
-        <div class="sidebar-brand-text">DBMS</div>
-        <div class="sidebar-brand-sub">Border Intelligence Platform</div>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-brand">
+        <img src="/svg/dbms-logo.svg" style="width:32px;height:32px" alt="DBMS">
+        <div>
+          <div class="sidebar-brand-text">DBMS</div>
+          <div class="sidebar-brand-sub">Border Intelligence Platform</div>
+        </div>
       </div>
-    </div>
-    <div class="sidebar-nav">
-      <div class="sidebar-section-label">Navigation</div>
-      <a href="/pages/dashboard.html" class="nav-item active">
-        <img src="/svg/icons/dashboard.svg" style="width:16px;height:16px;filter:invert(1)" alt=""><span data-i18n="dashboard.title">Dashboard</span>
-      </a>
-      <div class="sidebar-section-label">Border Patrol</div>
-      <a href="/pages/border-patrol/bsf.html" class="nav-item">
-        <img src="/svg/icons/border-patrol.svg" style="width:16px;height:16px;filter:invert(1)" alt=""><span>BSF — Pakistan &amp; Bangladesh</span>
-      </a>
-      <a href="/pages/border-patrol/itbp.html" class="nav-item">
-        <img src="/svg/icons/border-patrol.svg" style="width:16px;height:16px;filter:invert(1)" alt=""><span>ITBP — China &amp; Tibet</span>
-      </a>
-      <a href="/pages/border-patrol/ssb.html" class="nav-item">
-        <img src="/svg/icons/border-patrol.svg" style="width:16px;height:16px;filter:invert(1)" alt=""><span>SSB — Nepal &amp; Bhutan</span>
-      </a>
-      <a href="/pages/border-patrol/assam-rifles.html" class="nav-item">
-        <img src="/svg/icons/border-patrol.svg" style="width:16px;height:16px;filter:invert(1)" alt=""><span>Assam Rifles — Myanmar</span>
-      </a>
-      <a href="/pages/border-patrol/cisf.html" class="nav-item">
-        <img src="/svg/icons/border-patrol.svg" style="width:16px;height:16px;filter:invert(1)" alt=""><span>CISF — Airports &amp; Seaports</span>
-      </a>
-      <hr class="sidebar-divider">
-      <a href="/pages/sea-marshall.html" class="nav-item">
-        <img src="/svg/icons/ship.svg" style="width:16px;height:16px;filter:invert(1)" alt=""><span>Sea Marshall</span>
-      </a>
-      <a href="/pages/immigration.html" class="nav-item">
-        <img src="/svg/icons/passport.svg" style="width:16px;height:16px;filter:invert(1)" alt=""><span>Immigration Verification</span>
-      </a>
-      <hr class="sidebar-divider">
-      <a href="/pages/ngo-portal.html" class="nav-item">
-        <img src="/svg/icons/ngo.svg" style="width:16px;height:16px;filter:invert(1)" alt=""><span>NGO Portal</span>
-      </a>
-      <a href="/pages/refugee-portal.html" class="nav-item">
-        <img src="/svg/icons/refugee.svg" style="width:16px;height:16px;filter:invert(1)" alt=""><span>Refugee Portal</span>
-      </a>
-    </div>
-    <div class="sidebar-bottom">
-      <div class="lang-pills">
-        <button class="lang-pill active" data-lang="en">EN</button>
-        <button class="lang-pill" data-lang="hi">हि</button>
-        <button class="lang-pill" data-lang="ta">த</button>
-        <button class="lang-pill" data-lang="bn">বা</button>
+      <div class="sidebar-nav">
+        <<div class="sidebar-section-label">Navigation
       </div>
-      <div class="sidebar-user" id="sidebar-user-info">Loading...</div>
-      <button class="btn btn-secondary" id="logout-btn" style="width:100%;font-size:11px">
-        <img src="/svg/icons/logout.svg" style="width:13px;height:13px" alt=""> Logout
-      </button>
+      <a href="/pages/dashboard.html" class="nav-item"><img src="/svg/icons/dashboard.svg"
+          style="width:16px;filter:invert(1)" alt=""><span>Dashboard</span></a>
+      <div class="sidebar-section-label">Border Forces</div>
+      <a href="/pages/border-patrol/bsf.html" class="nav-item"><img src="/svg/bsf-emblem.svg"
+          style="width:16px;filter:invert(1)" alt=""><span>BSF</span></a>
+      <a href="/pages/border-patrol/itbp.html" class="nav-item"><img src="/svg/itbp-emblem.svg"
+          style="width:16px;filter:invert(1)" alt=""><span>ITBP</span></a>
+      <a href="/pages/border-patrol/ssb.html" class="nav-item"><img src="/svg/ssb-emblem.svg"
+          style="width:16px;filter:invert(1)" alt=""><span>SSB</span></a>
+      <a href="/pages/border-patrol/assam-rifles.html" class="nav-item"><img src="/svg/assam-rifles-emblem.svg"
+          style="width:16px;filter:invert(1)" alt=""><span>Assam Rifles</span></a>
+      <a href="/pages/border-patrol/cisf.html" class="nav-item active"><img src="/svg/cisf-emblem.svg"
+          style="width:16px;filter:invert(1)" alt=""><span>CISF</span></a>
+      <a href="/pages/sea-marshall.html" class="nav-item"><img src="/svg/icons/custom-anchor.svg"
+          style="width:16px;filter:invert(1)" alt=""><span>Sea Marshall</span></a>
+      <a href="/pages/immigration.html" class="nav-item"><img src="/svg/icons/passport.svg"
+          style="width:16px;filter:invert(1)" alt=""><span>Immigration</span></a>
+      <hr class="sidebar-divider">
+      <a href="/pages/ngo-portal.html" class="nav-item"><img src="/svg/icons/heart-svgrepo-com.svg"
+          style="width:16px;filter:invert(1)" alt=""><span>NGO Portal</span></a>
+      <a href="/pages/refugee-portal.html" class="nav-item"><img src="/svg/icons/refugeeimmigrant.svg"
+          style="width:16px;filter:invert(1)" alt=""><span>Refugee Portal</span></a>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="lang-pills">
+      <button class="lang-pill active" data-lang="en">EN</button>
+      <button class="lang-pill" data-lang="hi">हि</button>
+      <button class="lang-pill" data-lang="ta">த</button>
+      <button class="lang-pill" data-lang="bn">বা</button>
     </div>
+    <div class="sidebar-user" id="sidebar-user-info">Loading...</div>
+    <button class="btn btn-secondary" id="logout-btn" style="width:100%;font-size:11px;margin-bottom:15px;">
+      <img src="/svg/icons/logout.svg" style="width:13px;height:13px" alt=""> Logout
+    </button>
+    <div style="text-align: center; margin-top: 5px;">
+      <img src="/svg/icons/india-flag.svg" style="width:32px;height:auto" alt="India Flag">
+    </div>
+  </div>
   </nav>
 
   <!-- Main Content -->
@@ -122,10 +117,18 @@
         </div>
         <div id="main-map"></div>
         <div class="map-legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--marker-airport)"></div>Airport</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--marker-seaport)"></div>Seaport</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--marker-land)"></div>Land Border</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--marker-camp)"></div>Refugee Camp</div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--marker-airport)"></div>Airport
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--marker-seaport)"></div>Seaport
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--marker-land)"></div>Land Border
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--marker-camp)"></div>Refugee Camp
+          </div>
         </div>
       </div>
 
@@ -147,15 +150,16 @@
 
     </main>
   </div>
-</div>
-<div id="toast-container"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="/js/config.js"></script>
-<script src="/js/translation.js"></script>
-<script src="/js/ui-components.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/map.js"></script>
-<script src="/js/dashboard.js"></script>
+  </div>
+  <div id="toast-container"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="/js/config.js"></script>
+  <script src="/js/translation.js"></script>
+  <script src="/js/ui-components.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/map.js"></script>
+  <script src="/js/dashboard.js"></script>
 </body>
+
 </html>
