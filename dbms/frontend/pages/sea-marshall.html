@@ -6,6 +6,7 @@
   <title>DBMS — Sea Marshall Command</title>
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/sea-marshall.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 <div class="app-shell">
@@ -38,6 +39,32 @@
       </div>
     </header>
     <main class="content-area">
+      <style>
+      .sm-tab-btn {
+        padding: 8px 24px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        background: #E6E9F0;
+        color: #5F6B7A;
+        transition: all 0.2s;
+      }
+      .sm-tab-btn.active {
+        background: #D0D9E8;
+        color: #1A1A2E;
+      }
+      .sm-tab-btn:hover:not(.active) {
+        background: #DCE2ED;
+      }
+      </style>
+      <div style="display:flex;gap:12px;margin-bottom:16px;">
+        <button id="btn-tab-dashboard" class="sm-tab-btn active" onclick="switchSmTab('dashboard')">Dashboard</button>
+        <button id="btn-tab-marine" class="sm-tab-btn" onclick="switchSmTab('marine')">Marine-Traffic</button>
+      </div>
+
+      <div id="panel-dashboard">
       <!-- KPI Row -->
       <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
         <div class="kpi-card" style="border-left-color:var(--color-primary)">
@@ -116,6 +143,11 @@
           <div class="chart-canvas-wrap" style="height:220px;"><canvas id="chart-commodity"></canvas></div>
         </div>
       </div>
+      </div> <!-- End panel-dashboard -->
+
+      <div id="panel-marine" style="display:none;">
+        <div id="marine-wrap"></div>
+      </div>
     </main>
   </div>
 </div>
@@ -126,5 +158,7 @@
 <script src="/js/ui-components.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/sea-marshall.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/js/marine-map.js"></script>
 </body>
 </html>
