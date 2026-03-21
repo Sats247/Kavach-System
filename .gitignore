@@ -23,3 +23,22 @@ flask_session/
 # OS
 .DS_Store
 Thumbs.db
+
+# Additional env variants
+.env.*.local
+.env.development
+.env.production
+.env.test
+
+# Secrets & credentials
+secrets.json
+credentials.json
+service-account.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Node
+node_modules/
+

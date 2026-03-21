@@ -27,7 +27,7 @@ def create_app():
         static_folder=os.path.join(os.path.dirname(__file__), '..', 'frontend'),
         static_url_path=''
     )
-    app.secret_key = 'dbms-dev-secret-2026'
+    app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'dbms-dev-secret-2026')  # TODO: set FLASK_SECRET_KEY in your .env file
     CORS(app, supports_credentials=True)
 
     with app.app_context():
