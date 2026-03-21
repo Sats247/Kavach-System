@@ -29,7 +29,7 @@
 
 | Library / Tool | Category | Why It's Used in This Project |
 |---|---|---|
-| **Flask 3.0** | Backend framework | Serves the entire application — REST API (9 blueprints) + static frontend from a single Python process on port 5050 |
+| **Flask 3.0** | Backend framework | Serves the entire application - REST API (9 blueprints) + static frontend from a single Python process on port 5050 |
 | **flask-cors 4.0** | CORS middleware | Enables browser requests from the Leaflet/Chart.js frontend to the Flask API during local development |
 | **python-dotenv 1.0** | Config | Loads `AVIATIONSTACK_KEY` and `FLASK_SECRET_KEY` from `.env` into `os.environ` at startup in `app.py` |
 | **SQLite** (built-in) | Database | Stores all entities, refugee registrations, incidents, NGO assignments, and vessel statuses in `dbms.sqlite` — zero-dependency, WAL-mode enabled |
