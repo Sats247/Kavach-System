@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DBMS — Immigration Verification Terminal</title>
+  <title>DBMS — Immigration Patrol</title>
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/immigration.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -26,7 +26,7 @@
             style="width:16px;filter:invert(1)" alt=""><span>Dashboard</span></a>
         <hr class="sidebar-divider">
         <a href="/pages/immigration.html" class="nav-item active"><img src="/svg/icons/passport.svg"
-            style="width:16px;filter:invert(1)" alt=""><span>Immigration Verification</span></a>
+            style="width:16px;filter:invert(1)" alt=""><span>Immigration Patrol</span></a>
         <a href="/pages/sea-marshall.html" class="nav-item"><img src="/svg/icons/ship.svg"
             style="width:16px;filter:invert(1)" alt=""><span>Sea Marshall</span></a>
         <hr class="sidebar-divider">
@@ -63,6 +63,7 @@
             Terminal</div>
           <div class="tab-item" data-tab="tab-travelers" data-i18n="immigration.tab_travelers">Traveler Database</div>
           <div class="tab-item" data-tab="tab-blr-tracking">Live Aircraft Tracking</div>
+          <div class="tab-item" id="tab-btn-flights" data-tab="tab-flights">Arrivals &amp; Departures</div>
         </div>
 
         <!-- Tab: Verification Terminal -->
@@ -173,6 +174,273 @@
             </div>
           </div>
         </div>
+
+        <!-- Tab: Arrivals & Departures -->
+        <div class="tab-content" id="tab-flights">
+          <style scoped>
+          .fb-stat-cell {
+            padding: 10px 14px;
+            background: #fff;
+          }
+          .fb-stat-val {
+            font-size: 20px;
+            font-weight: 500;
+            color: #1a1a2e;
+            font-family: monospace;
+          }
+          .fb-stat-lbl {
+            font-size: 10px;
+            color: #6b7a8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+          }
+          .fb-th {
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 10px;
+            color: #1a1a2e;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            border-right: 1px solid rgba(0,0,0,0.1);
+          }
+          .fb-th:last-child { border-right: none; }
+          .fb-td {
+            padding: 9px 12px;
+            border-bottom: 0.5px solid #e4eaf2;
+            color: #1a1a2e;
+            white-space: normal;
+            word-break: break-word;
+            vertical-align: middle;
+          }
+          .fb-tr-even .fb-td { background: #f7f9fc; }
+          .fb-tr:hover .fb-td { background: #e8f0f8; }
+
+          /* Direction badge */
+          .fb-dir-arr {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 500;
+            font-family: monospace;
+            background: #E1F5EE;
+            color: #085041;
+          }
+          .fb-dir-dep {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 500;
+            font-family: monospace;
+            background: #E6F1FB;
+            color: #0C447C;
+          }
+
+          /* Status badges */
+          .fb-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+          }
+          .fb-b-enroute   { background:#E6F1FB; color:#0C447C; }
+          .fb-b-landed    { background:#EAF3DE; color:#27500A; }
+          .fb-b-boarding  { background:#FAEEDA; color:#633806; }
+          .fb-b-delayed   { background:#FCEBEB; color:#791F1F; }
+          .fb-b-scheduled { background:#f0f4f9; color:#5f6b7a; border:0.5px solid #d0d9e8; }
+          .fb-b-cancelled { background:#FCEBEB; color:#501313; border:0.5px solid #F09595; }
+
+          /* Filter buttons */
+          .fb-filter-btn {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            border: 0.5px solid #b0bcd0;
+            background: transparent;
+            color: #5f6b7a;
+            font-family: monospace;
+            transition: all 0.12s;
+          }
+          .fb-filter-btn:hover { background: #e8f0f8; color: #003366; }
+          .fb-filter-on {
+            background: #003366 !important;
+            color: #fff !important;
+            border-color: #003366 !important;
+          }
+
+          /* Live dot pulse */
+          #fb-live-dot { animation: fb-pulse 2s infinite; }
+          @keyframes fb-pulse {
+            0%,100% { opacity:1; }
+            50%      { opacity:0.3; }
+          }
+          </style>
+
+          <div id="panel-flights">
+
+            <!-- Airport header bar -->
+            <div id="fb-header" style="
+              background: #f0f4f9;
+              border-bottom: 0.5px solid #d0d9e8;
+              padding: 12px 20px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              flex-wrap: wrap;
+              gap: 10px;
+            ">
+              <!-- Left: airport identity -->
+              <div style="display:flex;align-items:center;gap:14px">
+                <div style="
+                  background: #003366;
+                  color: #fff;
+                  font-family: monospace;
+                  font-size: 20px;
+                  font-weight: 500;
+                  padding: 6px 14px;
+                  border-radius: 6px;
+                  line-height: 1;
+                " id="fb-iata">BLR</div>
+                <div>
+                  <div style="font-size: 14px; font-weight: 500; color: #003366;" id="fb-airport-name">Kempegowda International Airport</div>
+                  <div style="font-size: 11px; color: #6b7a8d; margin-top: 2px;" id="fb-airport-city">Bengaluru, Karnataka — India</div>
+                  <div style="font-size: 10px; color: #9aa5b4; margin-top: 1px; text-transform: uppercase; letter-spacing: 0.5px;">International Flight Board</div>
+                </div>
+              </div>
+
+              <!-- Right: clock + live indicator -->
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+                <div id="fb-clock" style="font-size: 20px; font-weight: 500; color: #003366; font-family: monospace; line-height: 1;">--:--:--</div>
+                <div id="fb-date" style="font-size: 11px; color: #6b7a8d;">--</div>
+                <div style="display:flex;align-items:center;gap:5px;margin-top:2px;font-size:10px;color:#9aa5b4">
+                  <div id="fb-live-dot" style="width:6px;height:6px;border-radius:50%;background:#4ade80;"></div>
+                  Live · Updates every 5 min
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats bar -->
+            <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-bottom:0.5px solid #d0d9e8">
+              <div class="fb-stat-cell" style="border-right:0.5px solid #d0d9e8">
+                <div id="fb-s-total" class="fb-stat-val">—</div>
+                <div class="fb-stat-lbl">Total flights</div>
+              </div>
+              <div class="fb-stat-cell" style="border-right:0.5px solid #d0d9e8">
+                <div id="fb-s-dep" class="fb-stat-val">—</div>
+                <div class="fb-stat-lbl">Departing India</div>
+              </div>
+              <div class="fb-stat-cell" style="border-right:0.5px solid #d0d9e8">
+                <div id="fb-s-arr" class="fb-stat-val">—</div>
+                <div class="fb-stat-lbl">Arriving India</div>
+              </div>
+              <div class="fb-stat-cell" style="border-right:0.5px solid #d0d9e8">
+                <div id="fb-s-del" class="fb-stat-val" style="color:#791F1F">—</div>
+                <div class="fb-stat-lbl">Delayed</div>
+              </div>
+              <div class="fb-stat-cell">
+                <div id="fb-s-ontime" class="fb-stat-val" style="color:#27500A">—</div>
+                <div class="fb-stat-lbl">On time</div>
+              </div>
+            </div>
+
+            <!-- Controls row -->
+            <div style="
+              padding:10px 16px;
+              border-bottom:0.5px solid #d0d9e8;
+              background:#f0f4f9;
+              display:flex;
+              align-items:center;
+              gap:10px;
+              flex-wrap:wrap;
+            ">
+              <!-- Airport selector -->
+              <select id="fb-airport-sel"
+                onchange="fbChangeAirport(this.value)"
+                style="min-width:260px;font-size:12px;padding:5px 10px;border-radius:6px;border:0.5px solid #b0bcd0;background:#fff;color:#1a1a2e;font-family:monospace">
+              </select>
+
+              <!-- Search -->
+              <input type="text" id="fb-search"
+                placeholder="Search flight, city, airline, country..."
+                oninput="fbRenderTable()"
+                style="font-size:12px;padding:5px 10px;border-radius:6px;border:0.5px solid #b0bcd0;background:#fff;color:#1a1a2e;width:220px">
+
+              <!-- Filter toggles — LEFT ALIGNED, immediately after search -->
+              <div id="fb-filters" style="display:flex;gap:6px;flex-wrap:wrap">
+                <button class="fb-filter-btn" onclick="fbToggleFilter(this,'delayed')">Delayed</button>
+                <button class="fb-filter-btn" onclick="fbToggleFilter(this,'enroute')">En Route</button>
+                <button class="fb-filter-btn" onclick="fbToggleFilter(this,'landed')">Landed</button>
+                <button class="fb-filter-btn" onclick="fbToggleFilter(this,'boarding')">Boarding</button>
+                <button class="fb-filter-btn" onclick="fbToggleFilter(this,'cancelled')">Cancelled</button>
+              </div>
+            </div>
+
+            <!-- Quota warning — hidden until triggered -->
+            <div id="fb-quota-bar" style="
+              display:none;
+              padding:7px 16px;
+              background:#fff3cd;
+              border-bottom:0.5px solid #ffc107;
+              font-size:11px;
+              color:#633806;
+            ">Monthly API quota reached. Data will resume next billing cycle.</div>
+
+            <!-- Table -->
+            <div style="overflow-x:auto">
+              <table id="fb-table" style="
+                width:100%;
+                border-collapse:collapse;
+                font-size:12px;
+                table-layout:fixed;
+              ">
+                <thead>
+                  <tr style="background:#f7f9fc; border-bottom:0.5px solid #d0d9e8;">
+                    <th class="fb-th" style="width:50px">Type</th>
+                    <th class="fb-th" style="width:90px">Flight</th>
+                    <th class="fb-th" style="width:130px">Airline</th>
+                    <th class="fb-th" style="width:170px">From</th>
+                    <th class="fb-th" style="width:170px">To</th>
+                    <th class="fb-th" style="width:90px">Scheduled</th>
+                    <th class="fb-th" style="width:80px">Actual</th>
+                    <th class="fb-th" style="width:75px">Delay</th>
+                    <th class="fb-th" style="width:100px">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="fb-tbody"></tbody>
+              </table>
+            </div>
+
+            <!-- Footer -->
+            <div style="
+              padding:8px 16px;
+              border-top:0.5px solid #d0d9e8;
+              display:flex;
+              align-items:center;
+              justify-content:space-between;
+              background:#f0f4f9;
+              flex-wrap:wrap;
+              gap:8px;
+            ">
+              <div id="fb-footer-left" style="font-size:11px;color:#5f6b7a"></div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div id="fb-countdown" style="font-size:11px;color:#5f6b7a;font-family:monospace"></div>
+                <button onclick="fbManualRefresh()" style="
+                  padding:4px 12px;border-radius:6px;font-size:11px;
+                  cursor:pointer;border:0.5px solid #b0bcd0;
+                  background:#fff;color:#003366;
+                ">Refresh</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </main>
     </div>
   </div>
@@ -186,6 +454,7 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="/liveaircraft/blr/js/blr-map.js"></script>
+  <script src="/js/flights-board.js"></script>
 </body>
 
 </html>

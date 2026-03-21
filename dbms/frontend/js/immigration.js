@@ -340,6 +340,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const content = document.getElementById(tab.dataset.tab);
       if (content) content.classList.add('active');
       if (tab.dataset.tab === 'tab-travelers') loadTravelers();
+      if (tab.dataset.tab === 'tab-flights') {
+        if (window.initFlightsBoard) window.initFlightsBoard();
+      } else {
+        if (window.stopFlightsBoardPoll) window.stopFlightsBoardPoll();
+      }
     });
   });
 

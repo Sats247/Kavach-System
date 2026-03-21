@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 from database import init_db
@@ -9,7 +12,12 @@ from routes.immigration import immigration_bp
 from routes.ngo import ngo_bp
 from routes.refugee import refugee_bp
 from routes.opensky import opensky_bp
+from routes.aviationstack import aviationstack_bp
 import os
+
+AVIATIONSTACK_KEY = os.environ.get('AVIATIONSTACK_KEY')
+if AVIATIONSTACK_KEY is None:
+    print('[AviationStack] WARNING: AVIATIONSTACK_KEY not set in .env')
 
 
 def create_app():
@@ -32,6 +40,7 @@ def create_app():
     app.register_blueprint(ngo_bp,           url_prefix='/api/ngo')
     app.register_blueprint(refugee_bp,       url_prefix='/api/refugee')
     app.register_blueprint(opensky_bp)  # route: /api/opensky (no prefix — defined in blueprint)
+    app.register_blueprint(aviationstack_bp)
 
     @app.route('/')
     def serve_index():
