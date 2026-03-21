@@ -65,26 +65,40 @@
 
   // ── INIT (called when tab is opened) ─────────────────
   window.initMarineMap = function () {
-    if (!isInitialized) {
-      isInitialized = true;
-      buildLayout();
-      initLeaflet();
-      startClock();
-    }
-    if (!wsocket) connectWs();
+    startMvClock();
   };
 
-  // ── STOP (called when tab is closed) ─────────────────
   window.stopMarineMap = function () {
-    if (wsocket) {
-      wsocket.close();
-      wsocket = null;
-    }
-    if (wsRetryTimer) {
-      clearTimeout(wsRetryTimer);
-      wsRetryTimer = null;
+    if (mvClockTimer) {
+      clearInterval(mvClockTimer);
+      mvClockTimer = null;
     }
   };
+
+  var mvClockTimer = null;
+
+  function startMvClock() {
+    function tick() {
+      var d = new Date();
+      var cl = document.getElementById('mv-clock');
+      var dl = document.getElementById('mv-date');
+      var up = document.getElementById('mv-upd');
+      if (cl) cl.textContent = d.toLocaleTimeString('en-IN', {
+        hour:'2-digit', minute:'2-digit', second:'2-digit',
+        timeZone: 'Asia/Kolkata',
+      });
+      if (dl) dl.textContent = d.toLocaleDateString('en-IN', {
+        weekday:'short', day:'numeric', month:'short',
+        timeZone: 'Asia/Kolkata',
+      }) + ' IST';
+      if (up) up.textContent = 'Updated ' + d.toLocaleTimeString('en-IN', {
+        hour:'2-digit', minute:'2-digit',
+        timeZone: 'Asia/Kolkata',
+      });
+    }
+    tick();
+    mvClockTimer = setInterval(tick, 1000);
+  }
 
   // ── BUILD HTML LAYOUT ────────────────────────────────
   function buildLayout() {
